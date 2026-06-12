@@ -103,9 +103,9 @@ export default function LeadForm() {
 
           <button
             type="submit"
-            className="self-start flex items-center gap-[10px] bg-ink text-paper text-[11px] font-bold tracking-[0.12em] uppercase px-[36px] py-[22px] mt-1 hover:bg-[#222] transition-colors"
+            className="submit-btn self-start flex items-center gap-[10px] bg-ink text-paper text-[11px] font-bold tracking-[0.12em] uppercase px-[36px] py-[22px] mt-1 hover:bg-[#222] transition-colors overflow-hidden"
           >
-            <span>✈</span> Отправить запрос
+            <span className="btn-plane">✈</span> Отправить запрос
           </button>
         </form>
 

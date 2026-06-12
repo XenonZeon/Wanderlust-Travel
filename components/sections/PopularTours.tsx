@@ -1,7 +1,10 @@
-import { tours } from '@/content/tours';
+"use client";
+
+import { useEffect, useRef } from "react";
+import { tours } from "@/content/tours";
 
 function formatPrice(price: number) {
-  return `от ${price.toLocaleString('ru-RU')} ₽`;
+  return `от ${price.toLocaleString("ru-RU")} ₽`;
 }
 
 function formatNights(n: number) {
@@ -14,48 +17,83 @@ function formatNights(n: number) {
 }
 
 const CARD_DEFS = [
-  { gridColumn: '1',     gridRow: '1 / 3', layout: 'large', photoW: '',    arrows: '→ → → → →' },
-  { gridColumn: '2 / 4', gridRow: '1',     layout: 'wide',  photoW: '45%', arrows: '→ → → → →' },
-  { gridColumn: '2',     gridRow: '2',     layout: 'small', photoW: '',    arrows: '→ → →'     },
-  { gridColumn: '3',     gridRow: '2',     layout: 'small', photoW: '',    arrows: '→ → →'     },
-  { gridColumn: '1 / 3', gridRow: '3',     layout: 'wide',  photoW: '44%', arrows: '→ → → → →' },
+  { gridColumn: "1",     gridRow: "1 / 3", layout: "large", photoW: "",    arrows: "→ → → → →" },
+  { gridColumn: "2 / 4", gridRow: "1",     layout: "wide",  photoW: "45%", arrows: "→ → → → →" },
+  { gridColumn: "2",     gridRow: "2",     layout: "small", photoW: "",    arrows: "→ → →"     },
+  { gridColumn: "3",     gridRow: "2",     layout: "small", photoW: "",    arrows: "→ → →"     },
+  { gridColumn: "1 / 3", gridRow: "3",     layout: "wide",  photoW: "44%", arrows: "→ → → → →" },
 ] as const;
 
 export default function PopularTours() {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".tour-card"));
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      cards.forEach((c) => c.classList.add("visible"));
+      return;
+    }
+
+    // Set cascade delays, then observe — CSS handles initial hidden state
+    cards.forEach((card, i) => {
+      card.style.transitionDelay = `${i * 0.1}s`;
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="tours" className="px-[60px] pt-[140px] pb-[100px] bg-ink">
       <h2
         className="font-black tracking-[-0.03em] leading-[0.95] mb-16 max-w-[500px]"
-        style={{ fontSize: 'clamp(52px, 6vw, 88px)' }}
+        style={{ fontSize: "clamp(52px, 6vw, 88px)" }}
       >
         Популярные<br />направления
       </h2>
 
       <div
+        ref={gridRef}
         className="grid gap-[3px]"
         style={{
-          gridTemplateColumns: '1.5fr 1fr 1fr',
-          gridTemplateRows: '340px 280px 320px',
+          gridTemplateColumns: "1.5fr 1fr 1fr",
+          gridTemplateRows: "340px 280px 320px",
         }}
       >
         {tours.slice(0, 5).map((tour, i) => {
           const { gridColumn, gridRow, layout, photoW, arrows } = CARD_DEFS[i];
-          const isWide  = layout === 'wide';
-          const isLarge = layout === 'large';
-          const isSmall = layout === 'small';
+          const isWide  = layout === "wide";
+          const isLarge = layout === "large";
+          const isSmall = layout === "small";
 
           return (
             <article
               key={tour.id}
-              className={`overflow-hidden bg-ink-soft flex ${isWide ? 'flex-row' : 'flex-col'}`}
+              className={`tour-card overflow-hidden bg-ink-soft flex ${isWide ? "flex-row" : "flex-col"}`}
               style={{ gridColumn, gridRow }}
             >
               {/* Photo */}
               <div
-                className={`bg-cover bg-center bg-no-repeat shrink-0 ${
-                  isLarge ? 'flex-1 min-h-0' :
-                  isWide  ? 'h-full'          :
-                            'h-[46%]'
+                className={`tour-photo bg-cover bg-center bg-no-repeat shrink-0 ${
+                  isLarge ? "flex-1 min-h-0" :
+                  isWide  ? "h-full"          :
+                            "h-[46%]"
                 }`}
                 style={{
                   backgroundImage: `url('${tour.image}')`,
@@ -65,32 +103,26 @@ export default function PopularTours() {
 
               {/* Info */}
               <div
-                className={`flex flex-col ${isWide ? 'flex-1' : isSmall ? 'flex-1' : 'shrink-0'} ${
-                  isSmall ? 'pt-3 px-[18px] pb-[14px] gap-[6px]' : 'pt-[18px] px-[22px] pb-5 gap-2'
+                className={`flex flex-col ${isWide ? "flex-1" : isSmall ? "flex-1" : "shrink-0"} ${
+                  isSmall ? "pt-3 px-[18px] pb-[14px] gap-[6px]" : "pt-[18px] px-[22px] pb-5 gap-2"
                 }`}
                 style={{
-                  borderTop:  isWide ? 'none' : '1px dashed rgba(245,245,240,0.12)',
-                  borderLeft: isWide ? '1px dashed rgba(245,245,240,0.12)' : 'none',
+                  borderTop:  isWide ? "none" : "1px dashed rgba(245,245,240,0.12)",
+                  borderLeft: isWide ? "1px dashed rgba(245,245,240,0.12)" : "none",
                 }}
               >
                 {/* Route */}
                 <div className="flex items-center gap-[6px]">
-                  <span
-                    className="text-[11px] font-extrabold tracking-[0.06em]"
-                    style={{ color: 'rgba(245,245,240,1)' }}
-                  >
+                  <span className="text-[11px] font-extrabold tracking-[0.06em]">
                     {tour.from}
                   </span>
                   <span
                     className="text-[10px] tracking-[2px]"
-                    style={{ color: 'rgba(245,245,240,0.28)' }}
+                    style={{ color: "rgba(245,245,240,0.28)" }}
                   >
                     {arrows}
                   </span>
-                  <span
-                    className="text-[11px] font-extrabold tracking-[0.06em]"
-                    style={{ color: 'rgba(245,245,240,1)' }}
-                  >
+                  <span className="text-[11px] font-extrabold tracking-[0.06em]">
                     {tour.to}
                   </span>
                 </div>
@@ -98,7 +130,7 @@ export default function PopularTours() {
                 {/* Destination */}
                 <h3
                   className="font-extrabold tracking-[-0.02em] leading-none"
-                  style={{ fontSize: isLarge ? '32px' : '26px' }}
+                  style={{ fontSize: isLarge ? "32px" : "26px" }}
                 >
                   {tour.destination}
                 </h3>
@@ -107,7 +139,7 @@ export default function PopularTours() {
                 {tour.description && (
                   <p
                     className="text-[12px] leading-[1.5]"
-                    style={{ color: 'rgba(245,245,240,0.45)' }}
+                    style={{ color: "rgba(245,245,240,0.45)" }}
                   >
                     {tour.description}
                   </p>
@@ -117,13 +149,13 @@ export default function PopularTours() {
                 <div className="flex items-baseline gap-4 mt-auto">
                   <span
                     className="text-[10px] font-semibold tracking-[0.08em] uppercase"
-                    style={{ color: 'rgba(245,245,240,0.35)' }}
+                    style={{ color: "rgba(245,245,240,0.35)" }}
                   >
                     {formatNights(tour.nights)}
                   </span>
                   <span
                     className="font-black tracking-[-0.02em]"
-                    style={{ fontSize: isLarge ? '28px' : '22px' }}
+                    style={{ fontSize: isLarge ? "28px" : "22px" }}
                   >
                     {formatPrice(tour.price)}
                   </span>
@@ -132,10 +164,10 @@ export default function PopularTours() {
                 {/* CTA */}
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 mt-1 text-[10px] font-bold tracking-[0.1em] uppercase px-[18px] py-[10px] w-fit"
-                  style={{ border: '1px solid rgba(245,245,240,0.2)', color: 'rgba(245,245,240,1)' }}
+                  className="tour-btn inline-flex items-center gap-2 mt-1 text-[10px] font-bold tracking-[0.1em] uppercase px-[18px] py-[10px] w-fit overflow-hidden"
+                  style={{ border: "1px solid rgba(245,245,240,0.2)" }}
                 >
-                  ✈ Выбрать тур
+                  <span className="btn-plane">✈</span> Выбрать тур
                 </a>
               </div>
             </article>

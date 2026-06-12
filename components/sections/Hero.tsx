@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 function SearchField({
   id,
   label,
@@ -36,12 +40,85 @@ function SearchField({
 }
 
 export default function Hero() {
+  const pathRef = useRef<SVGPathElement>(null);
+  const planeRef = useRef<SVGTextElement>(null);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    const plane = planeRef.current;
+    if (!path || !plane) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduced) {
+      path.style.strokeDasharray = "8 6";
+      path.style.strokeDashoffset = "0";
+      return;
+    }
+
+    const len = path.getTotalLength();
+
+    // Route: precise draw-from-nothing using actual path length, then restore dashes
+    path.style.strokeDasharray = String(len);
+    path.style.strokeDashoffset = String(len);
+    void path.getBoundingClientRect();
+    path.style.transition = "stroke-dashoffset 2.8s cubic-bezier(.4,0,.2,1) 0.3s";
+    path.style.strokeDashoffset = "0";
+    path.addEventListener(
+      "transitionend",
+      () => {
+        path.style.transition = "";
+        path.style.strokeDasharray = "8 6";
+      },
+      { once: true }
+    );
+
+    // Plane: RAF-based, ease-in-out matching the HTML mockup, 400ms delay
+    const DURATION = 2800;
+    let startTime: number | null = null;
+    let raf: number;
+    let started = false;
+
+    function animatePlane(ts: number) {
+      if (!started) return;
+      if (startTime === null) startTime = ts;
+      const elapsed = ts - startTime;
+      const raw = Math.min(elapsed / DURATION, 1);
+      const t = raw < 0.5 ? 2 * raw * raw : -1 + (4 - 2 * raw) * raw; // ease-in-out
+
+      const pt  = path!.getPointAtLength(t * len);
+      const pt2 = path!.getPointAtLength(Math.min((t + 0.01) * len, len));
+      const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+
+      plane!.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+      plane!.style.opacity = String(
+        raw < 0.05 ? raw / 0.05 : raw > 0.88 ? (1 - raw) / 0.12 : 1
+      );
+
+      if (raw < 1) raf = requestAnimationFrame(animatePlane);
+    }
+
+    // Kick off after 400ms — using RAF timestamp comparison for precision
+    const kickoff = requestAnimationFrame(function wait(ts) {
+      if (startTime === null) startTime = ts;
+      if (ts - startTime < 400) {
+        raf = requestAnimationFrame(wait);
+        return;
+      }
+      started = true;
+      startTime = null;
+      raf = requestAnimationFrame(animatePlane);
+    });
+
+    return () => cancelAnimationFrame(raf || kickoff);
+  }, []);
+
   return (
     <section
       id="hero"
       className="relative min-h-screen flex flex-col justify-end overflow-hidden bg-ink"
     >
-      {/* Background photo — floats right, fades to left via mask */}
+      {/* Background photo */}
       <div
         className="absolute"
         style={{
@@ -54,14 +131,12 @@ export default function Hero() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          WebkitMaskImage:
-            "linear-gradient(to left, black 55%, transparent 100%)",
-          maskImage:
-            "linear-gradient(to left, black 55%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+          maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
         }}
       />
 
-      {/* Static SVG route path (animation wired in task 4) */}
+      {/* SVG route + animated plane */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-[2]"
         viewBox="0 0 1440 900"
@@ -69,12 +144,24 @@ export default function Hero() {
         aria-hidden="true"
       >
         <path
+          ref={pathRef}
           fill="none"
           stroke="rgba(245,245,240,0.35)"
           strokeWidth="1.5"
           strokeDasharray="8 6"
           d="M -60,820 C 120,700 260,480 520,360 C 720,270 960,240 1200,200 C 1340,180 1420,160 1500,140"
         />
+        <text
+          ref={planeRef}
+          fontSize="22"
+          fill="rgba(245,245,240,0.85)"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          style={{ opacity: 0, userSelect: "none" }}
+          aria-hidden="true"
+        >
+          ✈
+        </text>
       </svg>
 
       {/* Headline */}
@@ -105,7 +192,6 @@ export default function Hero() {
             backgroundColor: "rgba(13,13,13,0.7)",
             backdropFilter: "blur(16px)",
           }}
-
         >
           <SearchField id="from" label="Откуда" placeholder="Москва" />
           <SearchField id="to" label="Куда" placeholder="Куда угодно" />
