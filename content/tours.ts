@@ -1,47 +1,61 @@
 export interface Tour {
   id: string;
+  from: string;
+  to: string;
   destination: string;
-  country: string;
-  duration: string;
+  description?: string;
+  nights: number;
   price: number;
-  image: string; // path relative to /public
-  featured?: boolean;
+  image: string;
 }
 
-// Placeholder content — replace with client data
 export const tours: Tour[] = [
   {
-    id: "maldives",
-    destination: "Мальдивы",
-    country: "Мальдивы",
-    duration: "10 дней",
-    price: 180000,
-    image: "/images/tours/maldives.jpg",
-    featured: true,
+    id: 'tokyo',
+    from: 'SVO',
+    to: 'NRT',
+    destination: 'Токио',
+    description: 'Японские мегаполисы и горные маршруты',
+    nights: 12,
+    price: 189000,
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=900&q=80',
   },
   {
-    id: "bali",
-    destination: "Бали",
-    country: "Индонезия",
-    duration: "12 дней",
-    price: 120000,
-    image: "/images/tours/bali.jpg",
+    id: 'reykjavik',
+    from: 'SVO',
+    to: 'KEF',
+    destination: 'Рейкьявик',
+    description: 'Северное сияние и чёрные пляжи',
+    nights: 8,
+    price: 142000,
+    image: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=900&q=80',
   },
   {
-    id: "italy",
-    destination: "Италия",
-    country: "Италия",
-    duration: "7 дней",
-    price: 95000,
-    image: "/images/tours/italy.jpg",
+    id: 'marrakech',
+    from: 'SVO',
+    to: 'CMN',
+    destination: 'Марракеш',
+    nights: 7,
+    price: 98000,
+    image: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=700&q=80',
   },
   {
-    id: "japan",
-    destination: "Япония",
-    country: "Япония",
-    duration: "14 дней",
-    price: 210000,
-    image: "/images/tours/japan.jpg",
-    featured: true,
+    id: 'patagonia',
+    from: 'SVO',
+    to: 'SCL',
+    destination: 'Патагония',
+    nights: 14,
+    price: 260000,
+    image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=700&q=80',
+  },
+  {
+    id: 'tbilisi',
+    from: 'SVO',
+    to: 'TBS',
+    destination: 'Тбилиси',
+    description: 'Вино, горы, старый город',
+    nights: 6,
+    price: 64000,
+    image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80',
   },
 ];
