@@ -74,9 +74,19 @@
   opacity: 0;
 }
 
+/* ── Mobile hero route: CSS draw animation ── */
+@keyframes drawRoute {
+  to { stroke-dashoffset: 0; }
+}
+.hero-route-mobile {
+  stroke-dashoffset: 1600;
+  animation: drawRoute 2.6s cubic-bezier(.4, 0, .2, 1) 0.5s forwards;
+}
+
 /* ── prefers-reduced-motion ── */
 @media (prefers-reduced-motion: reduce) {
-  .route-path { animation: none; stroke-dashoffset: 0; }
+  .route-path        { animation: none; stroke-dashoffset: 0; }
+  .hero-route-mobile { animation: none; stroke-dashoffset: 0; }
   .tour-card  { opacity: 1; transform: none; transition: none; }
   .tour-photo img,
   .btn-plane  { transition: none; }

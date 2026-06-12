@@ -34,22 +34,22 @@ export default function LeadForm() {
   }
 
   return (
-    <section id="contact" className="bg-paper text-ink px-[60px] py-[120px]">
-      <div className="grid grid-cols-[1fr_1.6fr] gap-[80px] items-start">
+    <section id="contact" className="bg-paper text-ink px-5 md:px-[60px] py-[72px] md:py-[120px]">
+      <div className="flex flex-col gap-8 md:grid md:grid-cols-[1fr_1.6fr] md:gap-[80px] md:items-start">
 
         {/* Heading */}
         <div>
-          <h2 className="text-[clamp(52px,6vw,88px)] font-black tracking-[-0.03em] leading-[0.95] mb-6">
+          <h2 className="text-[clamp(40px,11vw,88px)] font-black tracking-[-0.03em] leading-[0.95] mb-3 md:mb-6">
             Куда<br />летим?
           </h2>
-          <p className="text-[14px] text-ink/55 leading-[1.65] max-w-[280px]">
+          <p className="text-[13px] md:text-[14px] text-ink/55 leading-[1.65] max-w-[280px]">
             Опишите, что хотите — мы подберём маршрут и свяжемся в течение 2 часов.
           </p>
         </div>
 
         {/* Form */}
         {status === "success" ? (
-          <div className="flex flex-col justify-center gap-4 py-[60px]">
+          <div className="flex flex-col justify-center gap-4 py-10 md:py-[60px]">
             <p className="text-[28px] font-black tracking-[-0.02em] leading-none">Заявка отправлена ✈</p>
             <p className="text-[14px] text-ink/55 leading-[1.65]">
               Менеджер свяжется с вами в течение 2 часов.
@@ -68,84 +68,68 @@ export default function LeadForm() {
 
             <div className="grid grid-cols-2 gap-[2px] items-stretch">
               <div className="flex flex-col bg-paper-soft">
-                <label htmlFor="name" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
+                <label htmlFor="name" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px]">
                   Имя
                 </label>
                 <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Ваше имя"
-                  required
-                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
+                  type="text" id="name" name="name"
+                  placeholder="Ваше имя" required
+                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/[0.25] px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
                 />
               </div>
               <div className="flex flex-col bg-paper-soft">
-                <label htmlFor="phone" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
+                <label htmlFor="phone" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px]">
                   Телефон
                 </label>
                 <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  placeholder="+7 000 000 00 00"
-                  required
-                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
+                  type="tel" id="phone" name="phone"
+                  placeholder="+7 000 000 00 00" required
+                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/[0.25] px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
                 />
               </div>
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="destination" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+              <label htmlFor="destination" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px] bg-paper-soft">
                 Направление
               </label>
               <input
-                type="text"
-                id="destination"
-                name="destination"
+                type="text" id="destination" name="destination"
                 placeholder="Куда хотите полететь?"
-                className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
+                className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/[0.25] px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-[2px] items-stretch">
               <div className="flex flex-col bg-paper-soft">
-                <label htmlFor="travel-date" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
+                <label htmlFor="travel-date" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px]">
                   Дата вылета
                 </label>
                 <input
-                  type="date"
-                  id="travel-date"
-                  name="travel_date"
-                  className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:[filter:brightness(0)_opacity(0.7)] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                  type="date" id="travel-date" name="travel_date"
+                  className="bg-paper-soft text-[14px] font-medium text-ink px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:[filter:brightness(0)_opacity(0.7)] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
               </div>
               <div className="flex flex-col bg-paper-soft">
-                <label htmlFor="travelers" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
-                  Количество человек
+                <label htmlFor="travelers" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px]">
+                  Человек
                 </label>
                 <input
-                  type="number"
-                  id="travelers"
-                  name="travelers"
-                  min={1}
-                  max={20}
-                  placeholder="2"
-                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
+                  type="number" id="travelers" name="travelers"
+                  min={1} max={20} placeholder="2"
+                  className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/[0.25] px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
                 />
               </div>
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="message" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+              <label htmlFor="message" className="text-[8px] md:text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-4 md:px-[18px] pt-3 md:pt-[14px] bg-paper-soft">
                 Пожелания
               </label>
               <textarea
-                id="message"
-                name="message"
-                rows={4}
+                id="message" name="message" rows={4}
                 placeholder="Хочу горы, избегаю пляжных курортов, бюджет — до 200 000 ₽ на двоих..."
-                className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/40 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 resize-none"
+                className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/40 px-4 md:px-[18px] pb-[14px] pt-[6px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 resize-none"
               />
             </div>
 
@@ -158,7 +142,7 @@ export default function LeadForm() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="submit-btn self-start flex items-center gap-[10px] bg-ink text-paper text-[11px] font-bold tracking-[0.12em] uppercase px-[36px] py-[22px] mt-1 hover:bg-[#222] transition-colors overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed"
+              className="submit-btn flex items-center justify-center md:justify-start gap-[10px] bg-ink text-paper text-[11px] font-bold tracking-[0.12em] uppercase px-[36px] py-5 md:py-[22px] mt-1 hover:bg-[#222] transition-colors overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed w-full md:w-auto md:self-start"
             >
               <span className="btn-plane">✈</span>
               {status === "loading" ? "Отправляем..." : "Отправить запрос"}
