@@ -18,9 +18,9 @@ export default function LeadForm() {
           {/* honeypot — hidden from users, read by API */}
           <input type="text" name="_hp" className="hidden" tabIndex={-1} autoComplete="off" />
 
-          <div className="grid grid-cols-2 gap-[2px]">
-            <div className="flex flex-col">
-              <label htmlFor="name" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+          <div className="grid grid-cols-2 gap-[2px] items-stretch">
+            <div className="flex flex-col bg-paper-soft">
+              <label htmlFor="name" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
                 Имя
               </label>
               <input
@@ -32,8 +32,8 @@ export default function LeadForm() {
                 className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2"
               />
             </div>
-            <div className="flex flex-col">
-              <label htmlFor="phone" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+            <div className="flex flex-col bg-paper-soft">
+              <label htmlFor="phone" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
                 Телефон
               </label>
               <input
@@ -60,9 +60,9 @@ export default function LeadForm() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-[2px]">
-            <div className="flex flex-col">
-              <label htmlFor="travel-date" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+          <div className="grid grid-cols-2 gap-[2px] items-stretch">
+            <div className="flex flex-col bg-paper-soft">
+              <label htmlFor="travel-date" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
                 Дата вылета
               </label>
               <input
@@ -70,11 +70,11 @@ export default function LeadForm() {
                 id="travel-date"
                 name="travel_date"
                 style={{ colorScheme: 'light' }}
-                className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:brightness-0 [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
             </div>
-            <div className="flex flex-col">
-              <label htmlFor="travelers" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px] bg-paper-soft">
+            <div className="flex flex-col bg-paper-soft">
+              <label htmlFor="travelers" className="text-[9px] font-bold tracking-[0.12em] uppercase text-ink/40 px-[18px] pt-[14px]">
                 Количество человек
               </label>
               <input
