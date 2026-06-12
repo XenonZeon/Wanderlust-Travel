@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 function SearchField({
@@ -108,21 +109,25 @@ export default function Hero() {
     >
       {/* Background photo */}
       <div
-        className="absolute"
+        className="absolute overflow-hidden"
         style={{
           right: "-60px",
           top: "-30px",
           width: "68%",
           height: "110%",
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
           WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
           maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
         }}
-      />
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80"
+          alt=""
+          fill
+          priority
+          style={{ objectFit: "cover", objectPosition: "center" }}
+          sizes="68vw"
+        />
+      </div>
 
       {/* SVG route + animated plane */}
       <svg

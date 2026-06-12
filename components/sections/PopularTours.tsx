@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { tours } from "@/content/tours";
 
@@ -90,16 +91,21 @@ export default function PopularTours() {
             >
               {/* Photo */}
               <div
-                className={`tour-photo bg-cover bg-center bg-no-repeat shrink-0 ${
+                className={`tour-photo relative overflow-hidden shrink-0 ${
                   isLarge ? "flex-1 min-h-0" :
                   isWide  ? "h-full"          :
                             "h-[46%]"
                 }`}
-                style={{
-                  backgroundImage: `url('${tour.image}')`,
-                  ...(isWide ? { width: photoW } : {}),
-                }}
-              />
+                style={isWide ? { width: photoW } : {}}
+              >
+                <Image
+                  src={tour.image}
+                  alt={tour.destination}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
 
               {/* Info */}
               <div
