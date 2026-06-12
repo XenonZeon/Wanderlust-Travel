@@ -69,7 +69,8 @@ export default function LeadForm() {
                 type="date"
                 id="travel-date"
                 name="travel_date"
-                className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [color-scheme:light]"
+                style={{ colorScheme: 'light' }}
+                className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
             </div>
             <div className="flex flex-col">
@@ -97,7 +98,7 @@ export default function LeadForm() {
               name="message"
               rows={4}
               placeholder="Хочу горы, избегаю пляжных курортов, бюджет — до 200 000 ₽ на двоих..."
-              className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/28 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 resize-none"
+              className="bg-paper-soft text-[14px] font-medium text-ink placeholder:text-ink/40 px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 resize-none"
             />
           </div>
 
