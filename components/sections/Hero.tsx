@@ -40,77 +40,65 @@ function SearchField({
 }
 
 export default function Hero() {
-  const pathRef = useRef<SVGPathElement>(null);
-  const planeRef = useRef<SVGTextElement>(null);
+  const pathRef     = useRef<SVGPathElement>(null);
+  const planeRef    = useRef<SVGTextElement>(null);
+  const clipRectRef = useRef<SVGRectElement>(null);
 
   useEffect(() => {
-    const path = pathRef.current;
-    const plane = planeRef.current;
-    if (!path || !plane) return;
+    const path     = pathRef.current;
+    const plane    = planeRef.current;
+    const clipRect = clipRectRef.current;
+    if (!path || !plane || !clipRect) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     if (reduced) {
-      path.style.strokeDasharray = "8 6";
-      path.style.strokeDashoffset = "0";
+      clipRect.setAttribute("width", "1700");
       return;
     }
 
     const len = path.getTotalLength();
+    const DURATION  = 2800;
+    const ROUTE_DELAY = 300;  // matches HTML's 0.3s
+    const PLANE_DELAY = 400;  // matches HTML's setTimeout 400
 
-    // Route: precise draw-from-nothing using actual path length, then restore dashes
-    path.style.strokeDasharray = String(len);
-    path.style.strokeDashoffset = String(len);
-    void path.getBoundingClientRect();
-    path.style.transition = "stroke-dashoffset 2.8s cubic-bezier(.4,0,.2,1) 0.3s";
-    path.style.strokeDashoffset = "0";
-    path.addEventListener(
-      "transitionend",
-      () => {
-        path.style.transition = "";
-        path.style.strokeDasharray = "8 6";
-      },
-      { once: true }
-    );
-
-    // Plane: RAF-based, ease-in-out matching the HTML mockup, 400ms delay
-    const DURATION = 2800;
     let startTime: number | null = null;
     let raf: number;
-    let started = false;
 
-    function animatePlane(ts: number) {
-      if (!started) return;
+    // ease-in-out (same as HTML mockup formula)
+    const ease = (t: number) =>
+      t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+    const tick = (ts: number) => {
       if (startTime === null) startTime = ts;
       const elapsed = ts - startTime;
-      const raw = Math.min(elapsed / DURATION, 1);
-      const t = raw < 0.5 ? 2 * raw * raw : -1 + (4 - 2 * raw) * raw; // ease-in-out
 
-      const pt  = path!.getPointAtLength(t * len);
-      const pt2 = path!.getPointAtLength(Math.min((t + 0.01) * len, len));
-      const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-
-      plane!.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
-      plane!.style.opacity = String(
-        raw < 0.05 ? raw / 0.05 : raw > 0.88 ? (1 - raw) / 0.12 : 1
-      );
-
-      if (raw < 1) raf = requestAnimationFrame(animatePlane);
-    }
-
-    // Kick off after 400ms — using RAF timestamp comparison for precision
-    const kickoff = requestAnimationFrame(function wait(ts) {
-      if (startTime === null) startTime = ts;
-      if (ts - startTime < 400) {
-        raf = requestAnimationFrame(wait);
-        return;
+      // Route reveal: clipPath rect expands left→right, path always stays dashed
+      if (elapsed >= ROUTE_DELAY) {
+        const t = Math.min((elapsed - ROUTE_DELAY) / DURATION, 1);
+        clipRect.setAttribute("width", String(ease(t) * 1700));
       }
-      started = true;
-      startTime = null;
-      raf = requestAnimationFrame(animatePlane);
-    });
 
-    return () => cancelAnimationFrame(raf || kickoff);
+      // Plane follows route with 100ms extra delay
+      if (elapsed >= PLANE_DELAY) {
+        const raw = Math.min((elapsed - PLANE_DELAY) / DURATION, 1);
+        const t   = ease(raw);
+
+        const pt  = path.getPointAtLength(t * len);
+        const pt2 = path.getPointAtLength(Math.min((t + 0.01) * len, len));
+        const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+
+        plane.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+        plane.style.opacity = String(
+          raw < 0.05 ? raw / 0.05 : raw > 0.88 ? (1 - raw) / 0.12 : 1
+        );
+      }
+
+      const done = elapsed >= ROUTE_DELAY + DURATION && elapsed >= PLANE_DELAY + DURATION;
+      if (!done) raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
@@ -143,14 +131,23 @@ export default function Hero() {
         preserveAspectRatio="none"
         aria-hidden="true"
       >
+        <defs>
+          {/* Clip rect starts at width=0, expands right to reveal the dashed path */}
+          <clipPath id="hero-route-clip">
+            <rect ref={clipRectRef} x="-100" y="-50" width="0" height="1000" />
+          </clipPath>
+        </defs>
+
         <path
           ref={pathRef}
+          clipPath="url(#hero-route-clip)"
           fill="none"
           stroke="rgba(245,245,240,0.35)"
           strokeWidth="1.5"
           strokeDasharray="8 6"
           d="M -60,820 C 120,700 260,480 520,360 C 720,270 960,240 1200,200 C 1340,180 1420,160 1500,140"
         />
+
         <text
           ref={planeRef}
           fontSize="22"
