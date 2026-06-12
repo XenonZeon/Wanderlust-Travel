@@ -76,61 +76,91 @@ function MobileSearchField({
 }
 
 export default function Hero() {
-  const pathRef     = useRef<SVGPathElement>(null);
-  const planeRef    = useRef<SVGTextElement>(null);
-  const clipRectRef = useRef<SVGRectElement>(null);
+  const pathRef         = useRef<SVGPathElement>(null);
+  const planeRef        = useRef<SVGTextElement>(null);
+  const clipRectRef     = useRef<SVGRectElement>(null);
+  const mobilePathRef   = useRef<SVGPathElement>(null);
+  const mobilePlaneRef  = useRef<SVGTextElement>(null);
 
   useEffect(() => {
-    const path     = pathRef.current;
-    const plane    = planeRef.current;
-    const clipRect = clipRectRef.current;
-    if (!path || !plane || !clipRect) return;
-    if (window.innerWidth < 768) return; // desktop animation only
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      clipRect.setAttribute("width", "1700");
-      return;
-    }
 
-    const len = path.getTotalLength();
-    const DURATION    = 2800;
-    const ROUTE_DELAY = 300;
-    const PLANE_DELAY = 400;
+    if (window.innerWidth >= 768) {
+      // ── Desktop: clipPath route reveal + plane ──
+      const path     = pathRef.current;
+      const plane    = planeRef.current;
+      const clipRect = clipRectRef.current;
+      if (!path || !plane || !clipRect) return;
 
-    let startTime: number | null = null;
-    let raf: number;
+      if (reduced) { clipRect.setAttribute("width", "1700"); return; }
 
-    const ease = (t: number) =>
-      t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const len         = path.getTotalLength();
+      const DURATION    = 2800;
+      const ROUTE_DELAY = 300;
+      const PLANE_DELAY = 400;
+      let startTime: number | null = null;
+      let raf: number;
 
-    const tick = (ts: number) => {
-      if (startTime === null) startTime = ts;
-      const elapsed = ts - startTime;
+      const ease = (t: number) =>
+        t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-      if (elapsed >= ROUTE_DELAY) {
-        const t = Math.min((elapsed - ROUTE_DELAY) / DURATION, 1);
-        clipRect.setAttribute("width", String(ease(t) * 1700));
-      }
+      const tick = (ts: number) => {
+        if (startTime === null) startTime = ts;
+        const elapsed = ts - startTime;
 
-      if (elapsed >= PLANE_DELAY) {
-        const raw = Math.min((elapsed - PLANE_DELAY) / DURATION, 1);
+        if (elapsed >= ROUTE_DELAY) {
+          const t = Math.min((elapsed - ROUTE_DELAY) / DURATION, 1);
+          clipRect.setAttribute("width", String(ease(t) * 1700));
+        }
+        if (elapsed >= PLANE_DELAY) {
+          const raw = Math.min((elapsed - PLANE_DELAY) / DURATION, 1);
+          const t   = ease(raw);
+          const pt  = path.getPointAtLength(t * len);
+          const pt2 = path.getPointAtLength(Math.min((t + 0.01) * len, len));
+          const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+          plane.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+          plane.style.opacity = String(
+            raw < 0.05 ? raw / 0.05 : raw > 0.88 ? (1 - raw) / 0.12 : 1
+          );
+        }
+        const done = elapsed >= ROUTE_DELAY + DURATION && elapsed >= PLANE_DELAY + DURATION;
+        if (!done) raf = requestAnimationFrame(tick);
+      };
+
+      raf = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(raf);
+    } else {
+      // ── Mobile: plane follows path (route drawn by CSS) ──
+      const mobilePath  = mobilePathRef.current;
+      const mobilePlane = mobilePlaneRef.current;
+      if (!mobilePath || !mobilePlane) return;
+      if (reduced) return;
+
+      const len      = mobilePath.getTotalLength();
+      const DURATION = 2600;
+      let startTime: number | null = null;
+      let raf: number;
+
+      const ease = (t: number) =>
+        t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+      const animate = (ts: number) => {
+        if (startTime === null) startTime = ts;
+        const raw = Math.min((ts - startTime) / DURATION, 1);
         const t   = ease(raw);
-        const pt  = path.getPointAtLength(t * len);
-        const pt2 = path.getPointAtLength(Math.min((t + 0.01) * len, len));
+        const pt  = mobilePath.getPointAtLength(t * len);
+        const pt2 = mobilePath.getPointAtLength(Math.min((t + 0.01) * len, len));
         const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-        plane.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
-        plane.style.opacity = String(
+        mobilePlane.setAttribute("transform", `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+        mobilePlane.style.opacity = String(
           raw < 0.05 ? raw / 0.05 : raw > 0.88 ? (1 - raw) / 0.12 : 1
         );
-      }
+        if (raw < 1) raf = requestAnimationFrame(animate);
+      };
 
-      const done = elapsed >= ROUTE_DELAY + DURATION && elapsed >= PLANE_DELAY + DURATION;
-      if (!done) raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+      const timer = setTimeout(() => { raf = requestAnimationFrame(animate); }, 600);
+      return () => { clearTimeout(timer); cancelAnimationFrame(raf); };
+    }
   }, []);
 
   return (
@@ -179,7 +209,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* Mobile SVG route (CSS stroke-dashoffset animation) */}
+      {/* Mobile SVG route (CSS draw) + plane (JS) */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-[2] md:hidden"
         viewBox="0 0 390 700"
@@ -187,6 +217,7 @@ export default function Hero() {
         aria-hidden="true"
       >
         <path
+          ref={mobilePathRef}
           className="hero-route-mobile"
           fill="none"
           stroke="rgba(245,245,240,0.3)"
@@ -194,6 +225,17 @@ export default function Hero() {
           strokeDasharray="6 5"
           d="M 430,650 C 350,520 280,380 210,260 C 155,160 80,90 -40,30"
         />
+        <text
+          ref={mobilePlaneRef}
+          fontSize="18"
+          fill="rgba(245,245,240,0.85)"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          style={{ opacity: 0, userSelect: "none" }}
+          aria-hidden="true"
+        >
+          ✈
+        </text>
       </svg>
 
       {/* Desktop SVG route + animated plane */}
