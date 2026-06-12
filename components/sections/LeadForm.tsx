@@ -69,7 +69,6 @@ export default function LeadForm() {
                 type="date"
                 id="travel-date"
                 name="travel_date"
-                style={{ colorScheme: 'light' }}
                 className="bg-paper-soft text-[14px] font-medium text-ink px-[18px] pb-[16px] pt-[8px] outline-none focus:outline-2 focus:outline-ink/15 focus:-outline-offset-2 [&::-webkit-calendar-picker-indicator]:[filter:brightness(0)_opacity(0.7)] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
             </div>
