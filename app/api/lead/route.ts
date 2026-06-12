@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validation";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { sendMessage } from "@/lib/telegram";
 import { hashIp, isRateLimited } from "@/lib/rate-limit";
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "too many requests" }, { status: 429 });
   }
 
-  const { data: row, error } = await supabase
+  const { data: row, error } = await getSupabase()
     .from("leads")
     .insert({
       ...data,
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    console.error("supabase insert error", error);
+    console.error("getSupabase() insert error", error);
     return NextResponse.json({ ok: false, error: "db error" }, { status: 500 });
   }
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   const tgDelivered = await sendMessage(text);
 
   if (tgDelivered) {
-    await supabase.from("leads").update({ tg_delivered: true }).eq("id", row.id);
+    await getSupabase().from("leads").update({ tg_delivered: true }).eq("id", row.id);
   }
 
   return NextResponse.json({ ok: true });

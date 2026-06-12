@@ -1,11 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
-
 // server-only — never import in client components
-function getSupabaseClient() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Supabase env vars missing");
-  return createClient(url, key);
-}
+// Lazy singleton: created on first call, not at module load time
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-export const supabase = getSupabaseClient();
+let _client: SupabaseClient | null = null;
+
+export function getSupabase(): SupabaseClient {
+  if (!_client) {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) throw new Error("Supabase env vars missing");
+    _client = createClient(url, key);
+  }
+  return _client;
+}

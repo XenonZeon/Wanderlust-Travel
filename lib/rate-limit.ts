@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { supabase } from "./supabase";
+import { getSupabase } from "./supabase";
 
 export function hashIp(ip: string): string {
   const salt = process.env.IP_HASH_SALT ?? "default-salt";
@@ -10,7 +10,7 @@ export async function isRateLimited(ipHash: string): Promise<boolean> {
   const max = parseInt(process.env.RATE_LIMIT_MAX ?? "5", 10);
   const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
 
-  const { count, error } = await supabase
+  const { count, error } = await getSupabase()
     .from("leads")
     .select("*", { count: "exact", head: true })
     .eq("ip_hash", ipHash)
