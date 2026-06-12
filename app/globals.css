@@ -13,9 +13,25 @@
 
   body {
     @apply bg-ink text-paper font-sans;
+    overflow-x: hidden;
   }
 
   * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.3);
   }
 }
