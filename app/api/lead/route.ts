@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validation";
 import { getSupabase } from "@/lib/supabase";
-import { sendMessage } from "@/lib/telegram";
+import { sendMessage, escapeTelegramHtml } from "@/lib/telegram";
 import { hashIp, isRateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,10 @@ export async function POST(req: NextRequest) {
   const { _honey, ...data } = parsed.data;
   if (_honey) return NextResponse.json({ ok: true }); // honeypot triggered — silent 200
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip =
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",").at(-1)?.trim() ??
+    "unknown";
   const ipHash = hashIp(ip);
 
   if (await isRateLimited(ipHash)) {
@@ -38,10 +41,10 @@ export async function POST(req: NextRequest) {
 
   const text =
     `<b>Новая заявка</b>\n` +
-    `Имя: ${data.name}\n` +
-    `Телефон: ${data.phone}\n` +
-    (data.destination ? `Направление: ${data.destination}\n` : "") +
-    (data.message ? `Сообщение: ${data.message}\n` : "") +
+    `Имя: ${escapeTelegramHtml(data.name)}\n` +
+    `Телефон: ${escapeTelegramHtml(data.phone)}\n` +
+    (data.destination ? `Направление: ${escapeTelegramHtml(data.destination)}\n` : "") +
+    (data.message ? `Сообщение: ${escapeTelegramHtml(data.message)}\n` : "") +
     `ID: ${row.id}`;
 
   const tgDelivered = await sendMessage(text);
